@@ -3,70 +3,126 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Build the Target — Additive Thinking Center (Ver 2)</title>
+<title>Build the Target — Ver 3 (Duck Theme)</title>
 <style>
+  /* ===== Theme (Hello-Kitty-Duck Pastels) ===== */
   :root{
-    --bg:#f7fbff; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
-    --accent:#2563eb; --accent-2:#0ea5e9; --ok:#16a34a; --warn:#eab308; --err:#dc2626;
-    --ring: 0 0 0 3px rgba(37, 99, 235, .25); --shadow: 0 10px 20px rgba(2,6,23,.08), 0 2px 6px rgba(2,6,23,.06);
-    --radius: 1rem;
+    --bg:#b7e1ff;            /* sky blue */
+    --card:#ffffff;
+    --ink:#0f172a;           /* near-black for readability */
+    --muted:#475569;         /* slate */
+    --accent:#ffb703;        /* duck bill yellow */
+    --accent-2:#ff9f1c;      /* deeper yellow/orange */
+    --ok:#16a34a; --warn:#eab308; --err:#dc2626;
+    --ring: 0 0 0 3px rgba(255,183,3,.35);
+    --shadow: 0 10px 20px rgba(2,6,23,.08), 0 2px 6px rgba(2,6,23,.06);
+    --radius: 18px;
   }
   html,body{height:100%}
-  body{margin:0; font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica Neue,Arial;
-       color:var(--ink); background:linear-gradient(180deg,#f0f7ff,var(--bg))}
+  body{
+    margin:0; font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    color:var(--ink);
+    /* Try the duck BG; fall back to a soft gradient if not found */
+    background:
+      url("assets/img/duck-bg-hello-style.png") center/480px no-repeat fixed,
+      linear-gradient(180deg,#d9f2ff,var(--bg));
+  }
   .wrap{max-width:1100px; margin:32px auto; padding:0 16px; display:grid; gap:16px;}
+
+  /* ===== Header / Mascot ===== */
   header{display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-  .hgroup h1{font-size:clamp(1.1rem,1rem + 1.5vw,1.8rem); margin:.25rem 0}
+  .hgroup h1{font-size:clamp(1.2rem,1rem + 1.6vw,2rem); margin:.25rem 0}
   .hgroup p{margin:0; color:var(--muted)}
-  .panel{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
+  .brand{
+    display:flex; align-items:center; gap:12px; padding:8px 12px; border-radius:999px;
+    background:rgba(255,255,255,.8); box-shadow:var(--shadow)
+  }
+  .brand img{width:54px; height:54px; border-radius:50%; border:3px solid #111; background:#fef3c7}
+
+  /* ===== Panels / Buttons ===== */
+  .panel{background:rgba(255,255,255,.9); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; backdrop-filter: blur(3px)}
   .controls{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
-  .control{display:flex; gap:8px; align-items:center; background:#f8fafc; border:1px solid #e5e7eb; padding:8px 10px; border-radius:12px}
-  label{font-weight:600}
-  input[type="number"]{width:84px; padding:6px 8px; border:1px solid #cbd5e1; border-radius:10px; font-weight:600}
+  .control{display:flex; gap:8px; align-items:center; background:#fff6; border:1px solid #e5e7eb; padding:8px 10px; border-radius:14px}
+  label{font-weight:700}
+  input[type="number"]{width:84px; padding:6px 8px; border:2px solid #ffd166; border-radius:12px; font-weight:700; background:#fffaf0}
   input[type="number"]:focus, button:focus, .switch input:focus + .slider{outline:none; box-shadow:var(--ring)}
-  .btn{border:0; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer; background:var(--accent); color:#fff; box-shadow:var(--shadow); transition:transform .04s}
-  .btn.secondary{background:#0f172a0d; color:var(--ink); border:1px solid #e5e7eb}
-  .btn.ghost{background:transparent; border:1px dashed #cbd5e1; color:var(--muted)}
+
+  .btn{
+    border:0; padding:10px 14px; border-radius:14px; font-weight:800; cursor:pointer;
+    background:linear-gradient(180deg,var(--accent),var(--accent-2)); color:#111; box-shadow:var(--shadow);
+    transition:transform .04s ease, filter .15s ease;
+  }
+  .btn.secondary{background:#fff; color:var(--ink); border:2px solid #ffd166}
+  .btn.ghost{background:transparent; border:2px dashed #cbd5e1; color:var(--muted)}
   .btn:disabled{opacity:.55; cursor:not-allowed}
   .btn:active{transform:translateY(1px)}
+  .btn:hover{filter:brightness(1.02)}
+
+  /* ===== Tiles ===== */
   .grid{display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); gap:8px}
   .tile{
-    user-select:none; text-align:center; padding:12px 0; border-radius:12px; border:1px solid #e5e7eb;
-    background:linear-gradient(180deg,#fff,#f6f9ff); font-weight:800; cursor:pointer;
-    box-shadow:0 2px 4px rgba(2,6,23,.05);
+    user-select:none; text-align:center; padding:12px 0; border-radius:14px;
+    border:2px solid #111; background:#fffcee; font-weight:900; cursor:pointer;
+    box-shadow:0 2px 4px rgba(2,6,23,.05); position:relative;
   }
-  .tile[aria-disabled="true"]{opacity:.45; pointer-events:none}
+  /* tiny duck corner badge on tiles for fun */
+  .tile::after{
+    content:"🦆"; position:absolute; right:6px; top:2px; opacity:.35; font-size:14px
+  }
+  .tile[aria-disabled="true"]{opacity:.45; pointer-events:none; filter:grayscale(.2)}
   .tile:hover{transform:translateY(-1px)}
+
+  /* ===== Workspace / Saved ===== */
   .workspace{display:grid; grid-template-columns:1fr; gap:12px}
   .workline{
     display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;
-    background:#f8fafc; border:1px solid #e5e7eb; padding:10px; border-radius:12px;
+    background:#fff8; border:1px solid #e5e7eb; padding:10px; border-radius:14px;
   }
   .chips{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
-  .chip{background:#eef2ff; color:#3730a3; border:1px solid #c7d2fe; padding:6px 10px; border-radius:999px; font-weight:700}
-  .sum{font-weight:800}
+  .chip{
+    background:#ffe8a3; color:#111; border:2px solid #111; padding:6px 10px; border-radius:999px; font-weight:900
+  }
+  .sum{font-weight:900}
   .sum.ok{color:var(--ok)} .sum.warn{color:var(--warn)} .sum.err{color:var(--err)}
   .list{display:grid; gap:8px; max-height:300px; overflow:auto; padding-right:4px}
   .combo{display:flex; justify-content:space-between; align-items:center; gap:8px; background:#fff; border:1px solid #e5e7eb; padding:10px 12px; border-radius:12px}
-  .small{font-size:.9rem; color:var(--muted)}
+  .small{font-size:.92rem; color:var(--muted)}
   .switch{position:relative; display:inline-block; width:46px; height:26px}
   .switch input{opacity:0; width:0; height:0}
   .slider{position:absolute; cursor:pointer; inset:0; background:#cbd5e1; border-radius:999px; transition:.2s}
   .slider:before{position:absolute; content:""; height:20px; width:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 2px rgba(2,6,23,.15)}
-  .switch input:checked + .slider{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+  .switch input:checked + .slider{background:linear-gradient(90deg,#ffb703,#ff9f1c)}
   .switch input:checked + .slider:before{transform:translateX(20px)}
   .flex{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
   .justify{display:flex; justify-content:space-between; align-items:center; gap:12px}
   .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; background:#f1f5f9; border:1px solid #e2e8f0; padding:2px 6px; border-radius:6px}
   footer{color:var(--muted); font-size:.9rem; text-align:center; padding:8px 0}
+  /* Badge on Save */
+  #saveBtn.ducky:before{
+    content:"🦆"; margin-right:6px; display:inline-block; transform:translateY(1px)
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="hgroup">
-      <h1>Build the Target <span class="small">Ver 2</span></h1>
-      <p>Compose the target using number tiles. Use <strong>at least 3 numbers</strong>. Practice <em>additive thinking</em> (make-tens, doubles, compensation).</p>
+    <div class="brand">
+      <!-- Uses your PNG; if not found, the onerror swaps in a tiny inline SVG duck -->
+      <img id="duckLogo" src="assets/img/duck-bg-hello-style.png" alt="Duck mascot"
+           onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,\
+<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 128 128&quot;>\
+<rect width=&quot;128&quot; height=&quot;128&quot; fill=&quot;#8fd3ff&quot;/>\
+<g stroke=&quot;#111&quot; stroke-width=&quot;6&quot; fill=&quot;#ffe8a3&quot;>\
+<circle cx=&quot;64&quot; cy=&quot;56&quot; r=&quot;36&quot;/>\
+<ellipse cx=&quot;64&quot; cy=&quot;78&quot; rx=&quot;30&quot; ry=&quot;24&quot;/></g>\
+<g fill=&quot;#111&quot;><circle cx=&quot;50&quot; cy=&quot;54&quot; r=&quot;4&quot;/><circle cx=&quot;78&quot; cy=&quot;54&quot; r=&quot;4&quot;/></g>\
+<path d=&quot;M48 66h32c0 8-8 12-16 12s-16-4-16-12z&quot; fill=&quot;#ffb703&quot; stroke=&quot;#111&quot; stroke-width=&quot;6&quot;/>\
+<path d=&quot;M88 30c12 0 18 12 6 18 14-2 14 18-2 14-10-6-10-22-4-32z&quot; fill=&quot;#ff4d58&quot; stroke=&quot;#111&quot; stroke-width=&quot;6&quot;/>\
+</svg>';"/>
+      <div class="hgroup">
+        <h1>Build the Target <span class="small">Ver 3</span></h1>
+        <p>Compose the target with <strong>≥ 3 numbers</strong>. Practice <em>additive thinking</em> (make-tens, doubles, compensation).</p>
+      </div>
     </div>
     <div class="controls">
       <div class="control">
@@ -82,13 +138,14 @@
         </label>
       </div>
       <button class="btn secondary" id="exportBtn" title="Download saved combinations as CSV">Export CSV</button>
+      <button class="btn secondary" id="exportPngBtn" title="Download saved combinations as PNG poster(s)">Export PNG</button>
     </div>
   </header>
 
   <section class="panel">
     <div class="justify" style="margin-bottom:8px">
       <h3 style="margin:0">Tiles (1–20)</h3>
-      <div class="small">Shortcuts: press number keys <span class="kbd">1–9</span>, <span class="kbd">0</span>=10; <span class="kbd">Backspace</span>=Undo; <span class="kbd">Esc</span>=Clear.</div>
+      <div class="small">Shortcuts: <span class="kbd">1–9</span>, <span class="kbd">0</span>=10; <span class="kbd">Backspace</span>=Undo; <span class="kbd">Esc</span>=Clear.</div>
     </div>
     <div id="tiles" class="grid" role="grid" aria-label="Number tiles"></div>
   </section>
@@ -146,16 +203,16 @@
   const clearBtn = document.getElementById('clearBtn');
   const allowRepeatsChk = document.getElementById('allowRepeats');
   const exportBtn = document.getElementById('exportBtn');
+  const exportPngBtn = document.getElementById('exportPngBtn');
 
   // ---------- Persistence ----------
-  const LS_KEY = 'build-target-v2';
+  const LS_KEY = 'build-target-v3-duck';
   function load() {
     try {
       const raw = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
       if (Number.isFinite(raw.target)) state.target = raw.target;
       if (raw.allowRepeats !== undefined) state.allowRepeats = !!raw.allowRepeats;
       if (raw.savedByTarget && typeof raw.savedByTarget === 'object') {
-        // revive sets
         state.savedByTarget = {};
         for (const [t, arr] of Object.entries(raw.savedByTarget)) {
           state.savedByTarget[t] = new Set(Array.isArray(arr) ? arr : []);
@@ -221,10 +278,10 @@
     const need = state.current.length < 3 ? ' • need ≥3 numbers' : '';
     sumLabelEl.textContent = `Sum: ${s} / Target: ${state.target}${need}`;
 
-    // enable save iff exact match, >=3, and new
     const k = keyOf(state.current);
     const canSave = (s === state.target) && (state.current.length >= 3) && !getTargetSet(state.target).has(k);
     saveBtn.disabled = !canSave;
+    saveBtn.classList.toggle('ducky', canSave);  // add little duck when it's saveable
 
     updateTileInteractivity();
   }
@@ -232,7 +289,6 @@
   function renderSaved(){
     const set = getTargetSet(state.target);
     const combos = Array.from(set).map(k => k.split(',').map(Number));
-    // sort by length, then lexicographically
     combos.sort((a,b)=> a.length===b.length ? a.join(',').localeCompare(b.join(',')) : a.length-b.length);
 
     savedListEl.innerHTML = '';
@@ -325,6 +381,91 @@
     URL.revokeObjectURL(url);
     a.remove();
   });
+
+  // ---- Export PNG poster(s) of saved combos ----
+  exportPngBtn.addEventListener('click', exportPNG);
+  function exportPNG(){
+    const set = getTargetSet(state.target);
+    const combos = Array.from(set).map(k => k.split(',').map(Number));
+    if (combos.length === 0){
+      alert('No saved combinations for this target yet.');
+      return;
+    }
+    const title = `Build the Target — Target ${state.target}`;
+    const subtitle = `${combos.length} unique combinations (order doesn’t matter)`;
+    const padding = 24, colGap = 40, lineH = 28, headerH = 72, colWidth = 420, maxCanvasHeight = 1200;
+    const rowsPerCol = Math.max(1, Math.floor((maxCanvasHeight - padding*2 - headerH) / lineH));
+    const rows = combos
+      .sort((a,b)=> a.length===b.length ? a.join(',').localeCompare(b.join(',')) : a.length-b.length)
+      .map(arr => `${arr.join(' + ')} = ${state.target}`);
+
+    const totalRows = rows.length;
+    const totalCols = Math.ceil(totalRows / rowsPerCol);
+    const maxColsPerImage = 3;
+    const totalImages = Math.ceil(totalCols / maxColsPerImage);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function drawImage(imageIndex){
+      const startCol = imageIndex * maxColsPerImage;
+      const endCol = Math.min(startCol + maxColsPerImage, totalCols);
+      const colsInThis = endCol - startCol;
+
+      const rowsInLastCol = (imageIndex === totalImages-1 && endCol === totalCols)
+        ? totalRows - (startCol * rowsPerCol) - ((colsInThis-1) * rowsPerCol)
+        : rowsPerCol;
+      const contentHeight = headerH + Math.max(rowsPerCol, rowsInLastCol) * lineH;
+
+      const canvasWidth = padding*2 + colsInThis*colWidth + (colsInThis-1)*colGap;
+      const canvasHeight = padding*2 + contentHeight;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.ceil(canvasWidth * dpr);
+      canvas.height = Math.ceil(canvasHeight * dpr);
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      // Duck-y backdrop for poster
+      ctx.fillStyle = '#b7e1ff';
+      ctx.fillRect(0,0,canvasWidth,canvasHeight);
+
+      // Title
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '700 22px system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial';
+      ctx.fillText(title, padding, padding + 26);
+
+      // Subtitle
+      ctx.fillStyle = '#475569';
+      ctx.font = '400 16px system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial';
+      ctx.fillText(subtitle, padding, padding + 26 + 22);
+
+      // Columns
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '600 18px system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial';
+
+      for (let col=0; col<colsInThis; col++){
+        const globalCol = startCol + col;
+        const x0 = padding + col*(colWidth + colGap);
+        const startRowIdx = globalCol * rowsPerCol;
+        const endRowIdx = Math.min(startRowIdx + rowsPerCol, rows.length);
+
+        for (let r=startRowIdx; r<endRowIdx; r++){
+          const line = rows[r];
+          const y = padding + headerH + (r - startRowIdx + 1) * lineH - (lineH/6);
+          ctx.fillText(line, x0, y);
+        }
+      }
+
+      // Download
+      const pageSuffix = (totalImages > 1) ? `_p${imageIndex+1}` : '';
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = `build-the-target_${state.target}${pageSuffix}.png`;
+      document.body.appendChild(a);
+      a.click(); a.remove();
+    }
+
+    for (let i=0; i<totalImages; i++) drawImage(i);
+  }
 
   // Keyboard shortcuts: digits 1-9, 0->10; Backspace undo; Esc clear
   document.addEventListener('keydown', (e)=>{
