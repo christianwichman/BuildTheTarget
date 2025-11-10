@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Build the Target — Ver 7</title>
+<title>Build the Target — Ver 7.1 (Tiles Fix)</title>
 <style>
   :root{
     --bg:#f5f8ff; --card:#ffffff; --ink:#0f172a; --muted:#475569;
@@ -80,8 +80,8 @@
       <div class="controls">
         <div class="control">
           <label for="target">Target</label>
-          <!-- input min/max reflect the classroom bounds -->
-          <input id="target" type="number" min="1" max="25" step="1" value="10" />
+          <!-- min set to 2 to match the solvable range -->
+          <input id="target" type="number" min="2" max="25" step="1" value="10" />
           <button class="btn" id="newTargetBtn" title="Set target">Set</button>
         </div>
         <button class="btn secondary" id="randomBtn" title="Pick a random target (2–25)">Random Target</button>
@@ -130,8 +130,8 @@
 <script>
 (function(){
   // ---------- Settings ----------
-  const MIN_NUMBERS = 2;            // combos must use two or more numbers
-  const REPEATS_ALLOWED = true;     // repeats permanently on
+  const MIN_NUMBERS = 2;                 // combos must use two or more numbers
+  const REPEATS_ALLOWED = true;          // repeats permanently on
   const RANDOM_MIN = 2, RANDOM_MAX = 25; // classroom bounds for solvable targets
 
   // ---------- State ----------
@@ -161,7 +161,7 @@
   const exprStatusEl = document.getElementById('exprStatus');
 
   // ---------- Persistence ----------
-  const LS_KEY = 'build-target-v7';
+  const LS_KEY = 'build-target-v7.1';
   function load() {
     try {
       const raw = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
@@ -298,7 +298,6 @@
     saveLS(); renderCurrent(); renderSaved();
   });
 
-  const RANDOM_MIN = 2, RANDOM_MAX = 25;
   function randomizeTarget(){
     state.target = randInt(RANDOM_MIN, RANDOM_MAX);
     targetInput.value = state.target;
