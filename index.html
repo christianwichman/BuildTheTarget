@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Build the Target — Ver 6</title>
+<title>Build the Target — Ver 7</title>
 <style>
   :root{
     --bg:#f5f8ff; --card:#ffffff; --ink:#0f172a; --muted:#475569;
@@ -17,8 +17,6 @@
     color:var(--ink); background:linear-gradient(180deg,#eef4ff,var(--bg));
   }
   .wrap{max-width:1200px; margin:24px auto; padding:0 16px; display:grid; gap:16px}
-
-  /* Top: calculator display + saved combos in same area */
   .topbar{display:grid; grid-template-columns: 2fr 1fr; gap:16px}
   .display{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 16px; display:grid; gap:10px}
   .calc{
@@ -35,22 +33,17 @@
   label{font-weight:700}
   input[type="number"]{width:88px; padding:6px 8px; border:1px solid #cbd5e1; border-radius:10px; font-weight:700}
   input[type="number"]:focus, button:focus{outline:none; box-shadow:var(--ring)}
-  .btn{
-    border:0; padding:10px 14px; border-radius:12px; font-weight:800; cursor:pointer;
-    background:var(--accent); color:#fff; box-shadow:var(--shadow); transition:transform .04s
-  }
+  .btn{border:0; padding:10px 14px; border-radius:12px; font-weight:800; cursor:pointer; background:var(--accent); color:#fff; box-shadow:var(--shadow); transition:transform .04s}
   .btn.secondary{background:#0f172a0d; color:var(--ink); border:1px solid #e5e7eb}
   .btn:disabled{opacity:.55; cursor:not-allowed}
   .btn:active{transform:translateY(1px)}
 
-  /* Saved area */
   .savedWrap{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 12px}
   .savedHeader{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
   .list{display:grid; gap:8px; max-height:280px; overflow:auto; padding-right:4px}
   .combo{display:flex; justify-content:space-between; align-items:center; gap:8px; background:#fff; border:1px solid #e5e7eb; padding:8px 10px; border-radius:10px}
   .small{font-size:.92rem; color:var(--muted)}
 
-  /* Middle: target frame separate from tiles/workspace */
   .mid{display:grid; grid-template-columns: 1fr 2fr; gap:16px}
   .targetFrame{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; display:grid; gap:12px}
   .targetBox{border:2px solid #cbd5e1; border-radius:12px; padding:12px; background:#f8fafc; font-weight:900; font-size:1.2rem}
@@ -61,7 +54,6 @@
   .chips{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
   .chip{background:#eef2ff; color:#111; border:1px solid #c7d2fe; padding:6px 10px; border-radius:999px; font-weight:800}
 
-  /* Tiles: 4 rows of 5 with larger numbers */
   .grid{display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:10px}
   .tile{
     user-select:none; text-align:center; padding:18px 0; border-radius:12px; border:1px solid #e5e7eb;
@@ -79,7 +71,6 @@
 <body>
 <div class="wrap">
 
-  <!-- TOP AREA: Calculator display + Saved (same area) -->
   <section class="topbar">
     <div class="display">
       <div class="calc">
@@ -89,10 +80,11 @@
       <div class="controls">
         <div class="control">
           <label for="target">Target</label>
-          <input id="target" type="number" min="10" max="200" step="1" value="50" />
+          <!-- input min/max reflect the classroom bounds -->
+          <input id="target" type="number" min="1" max="25" step="1" value="10" />
           <button class="btn" id="newTargetBtn" title="Set target">Set</button>
         </div>
-        <button class="btn secondary" id="randomBtn" title="Pick a random target (10–200)">Random Target</button>
+        <button class="btn secondary" id="randomBtn" title="Pick a random target (2–25)">Random Target</button>
         <button class="btn secondary" id="newRoundBtn" title="Clear & randomize target">New Round</button>
         <button class="btn secondary" id="exportPngBtn" title="Download saved combinations as PNG">Export PNG</button>
       </div>
@@ -107,11 +99,10 @@
     </div>
   </section>
 
-  <!-- MIDDLE: Target frame separate from tiles/workspace -->
   <section class="mid">
     <div class="targetFrame">
       <h3 style="margin:0">Target</h3>
-      <div id="targetBox" class="targetBox">Current target: <strong>50</strong></div>
+      <div id="targetBox" class="targetBox">Current target: <strong>10</strong></div>
       <p class="small">Goal: Make the target using <strong>two or more</strong> numbers. (Repeats allowed.)</p>
     </div>
 
@@ -141,11 +132,11 @@
   // ---------- Settings ----------
   const MIN_NUMBERS = 2;            // combos must use two or more numbers
   const REPEATS_ALLOWED = true;     // repeats permanently on
-  const RANDOM_MIN = 10, RANDOM_MAX = 200;
+  const RANDOM_MIN = 2, RANDOM_MAX = 25; // classroom bounds for solvable targets
 
   // ---------- State ----------
   const state = {
-    target: 50,
+    target: 10,
     current: [],
     // savedByTarget: { [target:number]: Set<"a,b,c"> }
     savedByTarget: {}
@@ -170,7 +161,7 @@
   const exprStatusEl = document.getElementById('exprStatus');
 
   // ---------- Persistence ----------
-  const LS_KEY = 'build-target-v6';
+  const LS_KEY = 'build-target-v7';
   function load() {
     try {
       const raw = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
@@ -213,7 +204,6 @@
   }
 
   function renderCurrent(){
-    // chips
     currentChipsEl.innerHTML = '';
     state.current.forEach(v=>{
       const chip = document.createElement('span');
@@ -222,7 +212,6 @@
       currentChipsEl.appendChild(chip);
     });
 
-    // sum + status
     const s = sum(state.current);
     let status = 'warn';
     if (s === state.target && state.current.length >= MIN_NUMBERS) status = 'ok';
@@ -231,12 +220,10 @@
     const need = state.current.length < MIN_NUMBERS ? ` • need ≥${MIN_NUMBERS} numbers` : '';
     sumLabelEl.textContent = `Sum: ${s} / Target: ${state.target}${need}`;
 
-    // calculator display
     exprEl.textContent = formatExpr();
     exprStatusEl.className = `sumBadge ${status}`;
     exprStatusEl.textContent = (status==='ok'?'ready':'building…');
 
-    // save button
     const k = keyOf(state.current);
     const canSave = (s === state.target) && (state.current.length >= MIN_NUMBERS) && !getTargetSet(state.target).has(k);
     saveBtn.disabled = !canSave;
@@ -272,8 +259,7 @@
 
   // ---------- Handlers ----------
   function onTileClick(n){
-    // repeats are always allowed
-    state.current.push(n);
+    state.current.push(n); // repeats allowed
     renderCurrent();
   }
 
@@ -292,39 +278,37 @@
     renderSaved();
   });
 
-  newTargetBtn.addEventListener('click', ()=>{
-    const t = Number(targetInput.value);
-    if (Number.isFinite(t) && t>=RANDOM_MIN && t<=RANDOM_MAX){
-      state.target = Math.floor(t);
-      state.current = [];
-      saveLS();
-      renderCurrent();
-      renderSaved();
-    } else {
-      alert(`Please set a target between ${RANDOM_MIN} and ${RANDOM_MAX}.`);
+  // Clamp to 2–25 for solvability with ≥2 numbers
+  function clampTarget(t){
+    if (t < 2){
+      alert('With at least two numbers, the smallest possible sum is 2 (1+1). Target set to 2.');
+      return 2;
     }
+    if (t > 25) return 25;
+    return Math.floor(t);
+  }
+
+  newTargetBtn.addEventListener('click', ()=>{
+    let t = Number(targetInput.value);
+    if (!Number.isFinite(t)){ alert('Please enter a number.'); return; }
+    t = clampTarget(t);
+    state.target = t;
+    state.current = [];
+    targetInput.value = t;
+    saveLS(); renderCurrent(); renderSaved();
   });
 
-  randomBtn.addEventListener('click', ()=>{
+  const RANDOM_MIN = 2, RANDOM_MAX = 25;
+  function randomizeTarget(){
     state.target = randInt(RANDOM_MIN, RANDOM_MAX);
     targetInput.value = state.target;
     state.current = [];
-    saveLS();
-    renderCurrent();
-    renderSaved();
-  });
+    saveLS(); renderCurrent(); renderSaved();
+  }
+  randomBtn.addEventListener('click', randomizeTarget);
+  newRoundBtn.addEventListener('click', randomizeTarget);
 
-  // NEW ROUND: clear + randomize in one
-  newRoundBtn.addEventListener('click', ()=>{
-    state.target = randInt(RANDOM_MIN, RANDOM_MAX);
-    targetInput.value = state.target;
-    state.current = [];
-    saveLS();
-    renderCurrent();
-    renderSaved();
-  });
-
-  // ---- Export PNG poster(s) of saved combos ----
+  // ---- Export PNG(s) of saved combos ----
   exportPngBtn.addEventListener('click', exportPNG);
   function exportPNG(){
     const set = getTargetSet(state.target);
@@ -401,7 +385,7 @@
     for (let i=0;i<totalImages;i++) drawImage(i);
   }
 
-  // Keyboard: digits 1-9, 0->10; Backspace undo; Esc clear
+  // Keyboard shortcuts: digits 1-9, 0->10; Backspace undo; Esc clear
   document.addEventListener('keydown', (e)=>{
     if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
     const k = e.key;
