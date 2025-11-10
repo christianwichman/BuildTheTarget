@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Build the Target — Ver 4</title>
+<title>Build the Target — Ver 6</title>
 <style>
   :root{
     --bg:#f5f8ff; --card:#ffffff; --ink:#0f172a; --muted:#475569;
@@ -19,13 +19,8 @@
   .wrap{max-width:1200px; margin:24px auto; padding:0 16px; display:grid; gap:16px}
 
   /* Top: calculator display + saved combos in same area */
-  .topbar{
-    display:grid; grid-template-columns: 2fr 1fr; gap:16px;
-  }
-  .display{
-    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 16px;
-    display:grid; gap:10px;
-  }
+  .topbar{display:grid; grid-template-columns: 2fr 1fr; gap:16px}
+  .display{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 16px; display:grid; gap:10px}
   .calc{
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     background:#0b1220; color:#d9f3ff; border-radius:12px; padding:14px 16px;
@@ -35,26 +30,20 @@
   .sumBadge{font-weight:800}
   .sumBadge.ok{color:#9ef0a0} .sumBadge.warn{color:#ffe08a} .sumBadge.err{color:#ff9b9b}
 
-  .controls{
-    display:flex; flex-wrap:wrap; gap:10px; align-items:center
-  }
-  .control{
-    display:flex; gap:8px; align-items:center; background:#f8fafc; border:1px solid #e5e7eb;
-    padding:8px 10px; border-radius:12px
-  }
+  .controls{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+  .control{display:flex; gap:8px; align-items:center; background:#f8fafc; border:1px solid #e5e7eb; padding:8px 10px; border-radius:12px}
   label{font-weight:700}
   input[type="number"]{width:88px; padding:6px 8px; border:1px solid #cbd5e1; border-radius:10px; font-weight:700}
-  input[type="number"]:focus, button:focus, .switch input:focus + .slider{outline:none; box-shadow:var(--ring)}
+  input[type="number"]:focus, button:focus{outline:none; box-shadow:var(--ring)}
   .btn{
     border:0; padding:10px 14px; border-radius:12px; font-weight:800; cursor:pointer;
     background:var(--accent); color:#fff; box-shadow:var(--shadow); transition:transform .04s
   }
   .btn.secondary{background:#0f172a0d; color:var(--ink); border:1px solid #e5e7eb}
-  .btn.ghost{background:transparent; border:1px dashed #cbd5e1; color:var(--muted)}
   .btn:disabled{opacity:.55; cursor:not-allowed}
   .btn:active{transform:translateY(1px)}
 
-  /* Saved area (in topbar, right column) */
+  /* Saved area */
   .savedWrap{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 12px}
   .savedHeader{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
   .list{display:grid; gap:8px; max-height:280px; overflow:auto; padding-right:4px}
@@ -62,48 +51,27 @@
   .small{font-size:.92rem; color:var(--muted)}
 
   /* Middle: target frame separate from tiles/workspace */
-  .mid{
-    display:grid; grid-template-columns: 1fr 2fr; gap:16px;
-  }
+  .mid{display:grid; grid-template-columns: 1fr 2fr; gap:16px}
+  .targetFrame{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; display:grid; gap:12px}
+  .targetBox{border:2px solid #cbd5e1; border-radius:12px; padding:12px; background:#f8fafc; font-weight:900; font-size:1.2rem}
 
-  .targetFrame{
-    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px;
-    display:grid; gap:12px;
-  }
-  .targetBox{
-    border:2px solid #cbd5e1; border-radius:12px; padding:12px; background:#f8fafc; font-weight:900; font-size:1.2rem
-  }
-
-  .panel{
-    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px
-  }
+  .panel{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
   .workspace{display:grid; grid-template-columns:1fr; gap:12px}
-  .workline{
-    display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;
-    background:#f8fafc; border:1px solid #e5e7eb; padding:10px; border-radius:12px
-  }
+  .workline{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; background:#f8fafc; border:1px solid #e5e7eb; padding:10px; border-radius:12px}
   .chips{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
   .chip{background:#eef2ff; color:#111; border:1px solid #c7d2fe; padding:6px 10px; border-radius:999px; font-weight:800}
 
-  /* Tiles: 4 rows of 5 (1–20) with larger numbers */
+  /* Tiles: 4 rows of 5 with larger numbers */
   .grid{display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:10px}
   .tile{
     user-select:none; text-align:center; padding:18px 0; border-radius:12px; border:1px solid #e5e7eb;
     background:linear-gradient(180deg,#fff,#f6f9ff); font-weight:900; cursor:pointer; box-shadow:0 2px 4px rgba(2,6,23,.05);
     font-size:1.75rem;
   }
-  .tile[aria-disabled="true"]{opacity:.45; pointer-events:none}
   .tile:hover{transform:translateY(-1px)}
 
   .sum{font-weight:900}
   .sum.ok{color:var(--ok)} .sum.warn{color:var(--warn)} .sum.err{color:var(--err)}
-
-  .switch{position:relative; display:inline-block; width:46px; height:26px}
-  .switch input{opacity:0; width:0; height:0}
-  .slider{position:absolute; cursor:pointer; inset:0; background:#cbd5e1; border-radius:999px; transition:.2s}
-  .slider:before{position:absolute; content:""; height:20px; width:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 2px rgba(2,6,23,.15)}
-  .switch input:checked + .slider{background:linear-gradient(90deg, var(--accent), var(--accent-2))}
-  .switch input:checked + .slider:before{transform:translateX(20px)}
 
   footer{color:var(--muted); font-size:.9rem; text-align:center; padding:8px 0}
 </style>
@@ -122,17 +90,11 @@
         <div class="control">
           <label for="target">Target</label>
           <input id="target" type="number" min="10" max="200" step="1" value="50" />
-          <button class="btn" id="newTargetBtn" title="Set new target">Set</button>
+          <button class="btn" id="newTargetBtn" title="Set target">Set</button>
         </div>
-        <div class="control">
-          <label for="allowRepeats">Allow Repeats</label>
-          <label class="switch" title="Allow using the same tile more than once in a combination">
-            <input id="allowRepeats" type="checkbox">
-            <span class="slider"></span>
-          </label>
-        </div>
-        <button class="btn secondary" id="exportBtn">Export CSV</button>
-        <button class="btn secondary" id="exportPngBtn">Export PNG</button>
+        <button class="btn secondary" id="randomBtn" title="Pick a random target (10–200)">Random Target</button>
+        <button class="btn secondary" id="newRoundBtn" title="Clear & randomize target">New Round</button>
+        <button class="btn secondary" id="exportPngBtn" title="Download saved combinations as PNG">Export PNG</button>
       </div>
     </div>
 
@@ -150,7 +112,7 @@
     <div class="targetFrame">
       <h3 style="margin:0">Target</h3>
       <div id="targetBox" class="targetBox">Current target: <strong>50</strong></div>
-      <p class="small">Goal: Make the target using <strong>two or more</strong> numbers.</p>
+      <p class="small">Goal: Make the target using <strong>two or more</strong> numbers. (Repeats allowed.)</p>
     </div>
 
     <div class="panel workspace">
@@ -159,7 +121,7 @@
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
           <div id="sumLabel" class="sum">Sum: 0</div>
           <button class="btn secondary" id="undoBtn">Undo</button>
-          <button class="btn ghost" id="clearBtn">Clear</button>
+          <button class="btn secondary" id="clearBtn">Clear</button>
           <button class="btn" id="saveBtn" disabled>Save</button>
         </div>
       </div>
@@ -176,12 +138,15 @@
 
 <script>
 (function(){
+  // ---------- Settings ----------
+  const MIN_NUMBERS = 2;            // combos must use two or more numbers
+  const REPEATS_ALLOWED = true;     // repeats permanently on
+  const RANDOM_MIN = 10, RANDOM_MAX = 200;
+
   // ---------- State ----------
-  const MIN_NUMBERS = 2; // ✅ now "two or more"
   const state = {
     target: 50,
     current: [],
-    allowRepeats: false,
     // savedByTarget: { [target:number]: Set<"a,b,c"> }
     savedByTarget: {}
   };
@@ -194,23 +159,22 @@
   const countCombosEl = document.getElementById('countCombos');
   const targetInput = document.getElementById('target');
   const newTargetBtn = document.getElementById('newTargetBtn');
+  const randomBtn = document.getElementById('randomBtn');
+  const newRoundBtn = document.getElementById('newRoundBtn');
   const saveBtn = document.getElementById('saveBtn');
   const undoBtn = document.getElementById('undoBtn');
   const clearBtn = document.getElementById('clearBtn');
-  const allowRepeatsChk = document.getElementById('allowRepeats');
-  const exportBtn = document.getElementById('exportBtn');
   const exportPngBtn = document.getElementById('exportPngBtn');
   const targetBox = document.getElementById('targetBox');
   const exprEl = document.getElementById('expr');
   const exprStatusEl = document.getElementById('exprStatus');
 
   // ---------- Persistence ----------
-  const LS_KEY = 'build-target-v4';
+  const LS_KEY = 'build-target-v6';
   function load() {
     try {
       const raw = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
       if (Number.isFinite(raw.target)) state.target = raw.target;
-      if (raw.allowRepeats !== undefined) state.allowRepeats = !!raw.allowRepeats;
       if (raw.savedByTarget && typeof raw.savedByTarget === 'object') {
         state.savedByTarget = {};
         for (const [t, arr] of Object.entries(raw.savedByTarget)) {
@@ -220,7 +184,7 @@
     } catch {}
   }
   function saveLS() {
-    const out = { target: state.target, allowRepeats: state.allowRepeats, savedByTarget: {} };
+    const out = { target: state.target, savedByTarget: {} };
     for (const [t, set] of Object.entries(state.savedByTarget)) {
       out.savedByTarget[t] = Array.from(set);
     }
@@ -230,17 +194,13 @@
   // ---------- Utils ----------
   const sum = arr => arr.reduce((a,b)=>a+b,0);
   const keyOf = arr => [...arr].sort((a,b)=>a-b).join(',');
-  const usedCountMap = arr => arr.reduce((m,v)=>(m[v]=(m[v]||0)+1,m),{});
   const getTargetSet = t => (state.savedByTarget[t] ||= new Set());
-  const formatExpr = () => {
-    if (state.current.length === 0) return `_ + _ = ${state.target}`;
-    return `${state.current.join(' + ')} = ${sum(state.current)}`;
-  };
+  const formatExpr = () => state.current.length ? `${state.current.join(' + ')} = ${sum(state.current)}` : `_ + _ = ${state.target}`;
+  const randInt = (a,b)=> Math.floor(Math.random()*(b-a+1))+a;
 
   // ---------- Render ----------
   function renderTiles(){
     tilesEl.innerHTML = '';
-    // 1..20
     for (let n=1;n<=20;n++){
       const btn = document.createElement('button');
       btn.className = 'tile';
@@ -250,18 +210,6 @@
       btn.addEventListener('click', ()=>onTileClick(n));
       tilesEl.appendChild(btn);
     }
-    updateTileInteractivity();
-  }
-
-  function updateTileInteractivity(){
-    const map = usedCountMap(state.current);
-    const allow = state.allowRepeats;
-    [...tilesEl.children].forEach((b)=>{
-      const val = parseInt(b.textContent,10);
-      const disable = !allow && map[val] >= 1;
-      b.setAttribute('aria-disabled', disable ? 'true' : 'false');
-      b.tabIndex = disable ? -1 : 0;
-    });
   }
 
   function renderCurrent(){
@@ -292,8 +240,6 @@
     const k = keyOf(state.current);
     const canSave = (s === state.target) && (state.current.length >= MIN_NUMBERS) && !getTargetSet(state.target).has(k);
     saveBtn.disabled = !canSave;
-
-    updateTileInteractivity();
   }
 
   function renderSaved(){
@@ -320,25 +266,19 @@
   }
 
   function rerenderAll(){
-    targetInput.value = state.target;
-    allowRepeatsChk.checked = state.allowRepeats;
+    document.getElementById('target').value = state.target;
     renderTiles(); renderCurrent(); renderSaved();
   }
 
   // ---------- Handlers ----------
   function onTileClick(n){
-    if (!state.allowRepeats && state.current.includes(n)) return;
+    // repeats are always allowed
     state.current.push(n);
     renderCurrent();
   }
 
-  undoBtn.addEventListener('click', ()=>{
-    state.current.pop(); renderCurrent();
-  });
-
-  clearBtn.addEventListener('click', ()=>{
-    state.current = []; renderCurrent();
-  });
+  undoBtn.addEventListener('click', ()=>{ state.current.pop(); renderCurrent(); });
+  clearBtn.addEventListener('click', ()=>{ state.current = []; renderCurrent(); });
 
   saveBtn.addEventListener('click', ()=>{
     const s = sum(state.current);
@@ -354,40 +294,37 @@
 
   newTargetBtn.addEventListener('click', ()=>{
     const t = Number(targetInput.value);
-    if (Number.isFinite(t) && t>=10 && t<=200){
+    if (Number.isFinite(t) && t>=RANDOM_MIN && t<=RANDOM_MAX){
       state.target = Math.floor(t);
       state.current = [];
       saveLS();
       renderCurrent();
       renderSaved();
     } else {
-      alert('Please set a target between 10 and 200.');
+      alert(`Please set a target between ${RANDOM_MIN} and ${RANDOM_MAX}.`);
     }
   });
 
-  allowRepeatsChk.addEventListener('change', ()=>{
-    state.allowRepeats = allowRepeatsChk.checked;
-    state.current = []; saveLS(); rerenderAll();
+  randomBtn.addEventListener('click', ()=>{
+    state.target = randInt(RANDOM_MIN, RANDOM_MAX);
+    targetInput.value = state.target;
+    state.current = [];
+    saveLS();
+    renderCurrent();
+    renderSaved();
   });
 
-  // Export CSV
-  exportBtn.addEventListener('click', ()=>{
-    const set = getTargetSet(state.target);
-    const rows = [['target','combo','count']];
-    Array.from(set).forEach(k=>{
-      const arr = k.split(',').map(Number);
-      rows.push([state.target, arr.join('+'), arr.length]);
-    });
-    const csv = rows.map(r=>r.map(String).join(',')).join('\n');
-    const blob = new Blob([csv], {type:'text/csv'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `build-the-target_${state.target}.csv`;
-    document.body.appendChild(a);
-    a.click(); URL.revokeObjectURL(url); a.remove();
+  // NEW ROUND: clear + randomize in one
+  newRoundBtn.addEventListener('click', ()=>{
+    state.target = randInt(RANDOM_MIN, RANDOM_MAX);
+    targetInput.value = state.target;
+    state.current = [];
+    saveLS();
+    renderCurrent();
+    renderSaved();
   });
 
-  // Export PNG(s) of saved list
+  // ---- Export PNG poster(s) of saved combos ----
   exportPngBtn.addEventListener('click', exportPNG);
   function exportPNG(){
     const set = getTargetSet(state.target);
@@ -427,8 +364,7 @@
       const ctx = canvas.getContext('2d');
       ctx.scale(dpr, dpr);
 
-      ctx.fillStyle = '#f5f8ff';
-      ctx.fillRect(0,0,canvasWidth,canvasHeight);
+      ctx.fillStyle = '#f5f8ff'; ctx.fillRect(0,0,canvasWidth,canvasHeight);
 
       ctx.fillStyle = '#0f172a';
       ctx.font = '700 22px system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial';
@@ -465,7 +401,7 @@
     for (let i=0;i<totalImages;i++) drawImage(i);
   }
 
-  // Keyboard shortcuts: digits 1-9, 0->10; Backspace undo; Esc clear
+  // Keyboard: digits 1-9, 0->10; Backspace undo; Esc clear
   document.addEventListener('keydown', (e)=>{
     if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
     const k = e.key;
