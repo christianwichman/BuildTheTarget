@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Build the Target — Additive Thinking Center</title>
+<style>
+  :root{
+    --bg:#f7fbff;
+    --card:#ffffff;
+    --ink:#0f172a;
+    --muted:#64748b;
+    --accent:#2563eb;
+    --accent-2:#0ea5e9;
+    --ok:#16a34a;
+    --warn:#eab308;
+    --err:#dc2626;
+    --ring: 0 0 0 3px rgba(37, 99, 235, .25);
+    --shadow: 0 10px 20px rgba(2,6,23,.08), 0 2px 6px rgba(2,6,23,.06);
+    --radius: 1rem;
+  }
+  html,body{height:100%}
+  body{
+    margin:0; font: 16px/1.35 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+    color:var(--ink); background:linear-gradient(180deg,#f0f7ff, var(--bg));
+  }
+  .wrap{max-width:1100px; margin:32px auto; padding:0 16px; display:grid; gap:16px;}
+  header{display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+  .hgroup h1{font-size:clamp(1.1rem, 1rem + 1.5vw, 1.8rem); margin:.25rem 0}
+  .hgroup p{margin:0; color:var(--muted)}
+  .panel{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
+  .controls{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
+  .control{display:flex; gap:8px; align-items:center; background:#f8fafc; border:1px solid #e5e7eb; padding:8px 10px; border-radius:12px}
+  label{font-weight:600}
+  input[type="number"]{width:84px; padding:6px 8px; border:1px solid #cbd5e1; border-radius:10px; font-weight:600}
+  input[type="number"]:focus, button:focus, .switch input:focus + .slider{outline:none; box-shadow: var(--ring)}
+  .btn{
+    border:0; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer;
+    background:var(--accent); color:white; box-shadow: var(--shadow); transition: transform .04s ease;
+  }
+  .btn.secondary{background:#0f172a0d; color:var(--ink); border:1px solid #e5e7eb}
+  .btn.ghost{background:transparent; border:1px dashed #cbd5e1; color:var(--muted)}
+  .btn:active{transform:translateY(1px)}
+  .grid{
+    display:grid; grid-template-columns: repeat(10, minmax(0,1fr)); gap:8px;
+  }
+  .tile{
+    user-select:none; text-align:center; padding:12px 0; border-radius:12px; border:1px solid #e5e7eb;
+    background:linear-gradient(180deg,#fff,#f6f9ff); font-weight:800; cursor:pointer;
+    box-shadow: 0 2px 4px rgba(2,6,23,.05);
+  }
+  .tile.used{opacity:.45}
+  .tile:hover{transform:translateY(-1px)}
+  .workspace{
+    display:grid; grid-template-columns:1fr; gap:12px;
+  }
+  .workline{
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;
+    background:#f8fafc; border:1px solid #e5e7eb; padding:10px; border-radius:12px;
+  }
+  .chips{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+  .chip{
+    background:#eef2ff; color:#3730a3; border:1px solid #c7d2fe; padding:6px 10px; border-radius:999px; font-weight:700
+  }
+  .sum{font-weight:800}
+  .sum.ok{color:var(--ok)}
+  .sum.warn{color:var(--warn)}
+  .sum.err{color:var(--err)}
+  .list{display:grid; gap:8px; max-height:300px; overflow:auto; padding-right:4px}
+  .combo{
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+    background:#ffffff; border:1px solid #e5e7eb; padding:10px 12px; border-radius:12px;
+  }
+  .small{font-size:.9rem; color:var(--muted)}
+  .switch{position:relative; display:inline-block; width:46px; height:26px}
+  .switch input{opacity:0; width:0; height:0}
+  .slider{
+    position:absolute; cursor:pointer; inset:0; background:#cbd5e1; border-radius:999px; transition:.2s;
+  }
+  .slider:before{
+    position:absolute; content:""; height:20px; width:20px; left:3px; top:3px; background:white; border-radius:50%; transition:.2s;
+    box-shadow: 0 1px 2px rgba(2,6,23,.15);
+  }
+  .switch input:checked + .slider{background:linear-gradient(90deg, var(--accent), var(--accent-2))}
+  .switch input:checked + .slider:before{transform:translateX(20px)}
+  .flex{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  .justify{display:flex; justify-content:space-between; align-items:center; gap:12px}
+  .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; background:#f1f5f9; border:1px solid #e2e8f0; padding:2px 6px; border-radius:6px}
+  footer{color:var(--muted); font-size:.9rem; text-align:center; padding:8px 0}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="hgroup">
+        <h1>Build the Target</h1>
+        <p>Compose the target using number tiles. Use <strong>at least 3 numbers</strong>. Practice <em>additive thinking</em> (make-tens, doubles, compensation).</p>
+      </div>
+      <div class="controls">
+        <div class="control">
+          <label for="target">Target</label>
+          <input id="target" type="number" min="10" max="200" step="1" value="50" />
+          <button class="btn" id="newTargetBtn" title="Set new target">New Target</button>
+        </div>
+        <div class="control">
+          <label for="allowRepeats">Allow Repeats</label>
+          <label class="switch" title="Allow using the same tile more than once in a combination">
+            <input id="allowRepeats" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <button class="btn secondary" id="exportBtn" title="Download saved combinations as CSV">Export CSV</button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="justify" style="margin-bottom:8px">
+        <h3 style="margin:0">Tiles (1–20)</h3>
+        <div class="small">Tip: Aim for friendly tens. Try <span class="kbd">8</span> + <span class="kbd">2</span>, then build to <span class="kbd">18</span> + <span class="kbd">2</span>, etc.</div>
+      </div>
+      <div id="tiles" class="grid" role="grid" aria-label="Number tiles"></div>
+    </section>
+
+    <section class="panel workspace">
+      <div class="workline" aria-live="polite">
+        <div class="chips" id="currentChips"></div>
+        <div class="flex">
+          <div id="sumLabel" class="sum">Sum: 0</div>
+          <button class="btn secondary" id="undoBtn" title="Remove last number">Undo</button>
+          <button class="btn ghost" id="clearBtn" title="Clear current selection">Clear</button>
+          <button class="btn" id="saveBtn" disabled title="Save combination">Save</button>
+        </div>
+      </div>
+      <div class="justify">
+        <h3 style="margin:0">Saved Combinations</h3>
+        <div class="small"><span id="countCombos">0</span> saved • Unique (order doesn’t matter)</div>
+      </div>
+      <div id="savedList" class="list" aria-live="polite"></div>
+    </section>
+
+    <section class="panel">
+      <h3 style="margin-top:0">Why this builds additive thinking</h3>
+      <ul>
+        <li><strong>Part–whole &amp; decomposition:</strong> Students compose the same total in multiple ways.</li>
+        <li><strong>Compensation:</strong> Adjust numbers to keep the same total (e.g., +1 and −1 elsewhere).</li>
+        <li><strong>Make-tens anchors:</strong> Encourage bridging to 10, 20, 50 for mental efficiency.</li>
+      </ul>
+    </section>
+
+    <footer>© Build the Target • Works offline • Data saved in your browser</footer>
+  </div>
+
+<script>
+(function(){
+  // --- State ---
+  const state = {
+    target: 50,
+    current: [],
+    saved: new Set(),  // store "1,4,45" keys
+    allowRepeats: false,
+  };
+
+  // --- Elements ---
+  const tilesEl = document.getElementById('tiles');
+  const currentChipsEl = document.getElementById('currentChips');
+  const sumLabelEl = document.getElementById('sumLabel');
+  const savedListEl = document.getElementById('savedList');
+  const countCombosEl = document.getElementById('countCombos');
+  const targetInput = document.getElementById('target');
+  const newTargetBtn = document.getElementById('newTargetBtn');
+  const saveBtn = document.getElementById('saveBtn');
+  const undoBtn = document.getElementById('undoBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const allowRepeatsChk = document.getElementById('allowRepeats');
+  const exportBtn = document.getElementById('exportBtn');
+
+  // --- Persistence ---
+  const LS_KEY = 'build-target-v1';
+  function load() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+      if (raw.target) state.target = raw.target;
+      if (Array.isArray(raw.savedKeys)) raw.savedKeys.forEach(k => state.saved.add(k));
+      if (typeof raw.allowRepeats === 'boolean') state.allowRepeats = raw.allowRepeats;
+    } catch {}
+  }
+  function save() {
+    const savedKeys = Array.from(state.saved);
+    localStorage.setItem(LS_KEY, JSON.stringify({
+      target: state.target,
+      savedKeys,
+      allowRepeats: state.allowRepeats
+    }));
+  }
+
+  // --- Utilities ---
+  const sum = arr => arr.reduce((a,b)=>a+b,0);
+  function keyOf(arr){
+    // Unique, order-insensitive key. Sort ascending.
+    const sorted = [...arr].sort((a,b)=>a-b);
+    return sorted.join(',');
+  }
+  function tilesUsedCountMap(arr){
+    return arr.reduce((m,v)=> (m[v]=(m[v]||0)+1, m), {});
+  }
+
+  // --- Renderers ---
+  function renderTiles(){
+    tilesEl.innerHTML = '';
+    for (let n=1;n<=20;n++){
+      const btn = document.createElement('button');
+      btn.className = 'tile';
+      btn.setAttribute('role','gridcell');
+      btn.setAttribute('aria-label', `Tile ${n}`);
+      btn.textContent = n;
+      btn.addEventListener('click', ()=>onTileClick(n, btn));
+      tilesEl.appendChild(btn);
+    }
+    updateTileDisabledStyles();
+  }
+
+  function updateTileDisabledStyles(){
+    // If repeats not allowed, mark tiles that are already at max usage within current combo.
+    const map = tilesUsedCountMap(state.current);
+    const allowRepeats = state.allowRepeats;
+    [...tilesEl.children].forEach((b)=>{
+      const val = parseInt(b.textContent,10);
+      b.classList.toggle('used', !allowRepeats && map[val] >= 1);
+    });
+  }
+
+  function renderCurrent(){
+    currentChipsEl.innerHTML = '';
+    state.current.forEach((v, i)=>{
+      const chip = document.createElement('span');
+      chip.className='chip';
+      chip.textContent = v;
+      currentChipsEl.appendChild(chip);
+    });
+    const s = sum(state.current);
+    const status = s === state.target
+      ? (state.current.length>=3 ? 'ok' : 'warn')
+      : (s < state.target ? 'warn' : 'err');
+
+    sumLabelEl.className = `sum ${status}`;
+    sumLabelEl.textContent = `Sum: ${s} / Target: ${state.target} ${state.current.length<3 ? ' • need ≥3 numbers' : ''}`;
+
+    // Enable save only if exact match and >= 3 numbers and combination not already saved
+    const canSave = (s === state.target) && (state.current.length >= 3) && !state.saved.has(keyOf(state.current));
+    saveBtn.disabled = !canSave;
+    updateTileDisabledStyles();
+  }
+
+  function renderSaved(){
+    savedListEl.innerHTML = '';
+    const combos = Array.from(state.saved)
+      .map(k => k.split(',').map(Number))
+      .filter(arr => sum(arr) === state.target); // only show those for current target
+    combos.sort((a,b)=> a.length===b.length ? a[0]-b[0] : a.length-b.length);
+    countCombosEl.textContent = combos.length.toString();
+
+    combos.forEach(arr=>{
+      const row = document.createElement('div');
+      row.className='combo';
+      const left = document.createElement('div');
+      left.textContent = `${arr.join(' + ')} = ${state.target}`;
+      const right = document.createElement('div');
+      right.className='small';
+      right.textContent = `${arr.length} nums`;
+      row.append(left,right);
+      savedListEl.appendChild(row);
+    });
+  }
+
+  function rerenderAll(){
+    targetInput.value = state.target;
+    allowRepeatsChk.checked = state.allowRepeats;
+    renderTiles();
+    renderCurrent();
+    renderSaved();
+  }
+
+  // --- Handlers ---
+  function onTileClick(n, btnEl){
+    if (!state.allowRepeats) {
+      // If already used once in current combo, ignore
+      if (state.current.includes(n)) return;
+    }
+    state.current.push(n);
+    renderCurrent();
+  }
+
+  undoBtn.addEventListener('click', ()=>{
+    state.current.pop();
+    renderCurrent();
+  });
+
+  clearBtn.addEventListener('click', ()=>{
+    state.current = [];
+    renderCurrent();
+  });
+
+  saveBtn.addEventListener('click', ()=>{
+    const s = sum(state.current);
+    if (s !== state.target || state.current.length < 3) return;
+    const key = keyOf(state.current);
+    state.saved.add(key);
+    save();
+    state.current = [];
+    renderCurrent();
+    renderSaved();
+  });
+
+  newTargetBtn.addEventListener('click', ()=>{
+    const t = Number(targetInput.value);
+    if (Number.isFinite(t) && t>=10 && t<=200){
+      state.target = Math.floor(t);
+      state.current = [];
+      save();
+      renderCurrent();
+      renderSaved();
+    } else {
+      alert('Please set a target between 10 and 200.');
+    }
+  });
+
+  allowRepeatsChk.addEventListener('change', ()=>{
+    state.allowRepeats = allowRepeatsChk.checked;
+    state.current = []; // reset current selection to avoid conflict
+    save();
+    renderCurrent();
+    updateTileDisabledStyles();
+  });
+
+  exportBtn.addEventListener('click', ()=>{
+    // Export all saved combos for the CURRENT target as CSV
+    const rows = [['target','combo','count']];
+    Array.from(state.saved)
+      .map(k=>k.split(',').map(Number))
+      .filter(arr=>sum(arr)===state.target)
+      .forEach(arr=>{
+        rows.push([state.target, arr.join('+'), arr.length]);
+      });
+    const csv = rows.map(r=>r.map(x=>String(x)).join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `build-the-target_${state.target}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(url);
+    a.remove();
+  });
+
+  // Keyboard: Backspace = Undo, Escape = Clear
+  document.addEventListener('keydown', (e)=>{
+    if (e.key === 'Backspace'){
+      e.preventDefault(); undoBtn.click();
+    } else if (e.key === 'Escape'){
+      clearBtn.click();
+    }
+  });
+
+  // Init
+  load();
+  rerenderAll();
+})();
+</script>
+</body>
+</html>
