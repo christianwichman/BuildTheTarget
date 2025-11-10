@@ -3,177 +3,172 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Build the Target — Ver 3 (Duck Theme)</title>
+<title>Build the Target — Ver 4</title>
 <style>
-  /* ===== Theme (Hello-Kitty-Duck Pastels) ===== */
   :root{
-    --bg:#b7e1ff;            /* sky blue */
-    --card:#ffffff;
-    --ink:#0f172a;           /* near-black for readability */
-    --muted:#475569;         /* slate */
-    --accent:#ffb703;        /* duck bill yellow */
-    --accent-2:#ff9f1c;      /* deeper yellow/orange */
-    --ok:#16a34a; --warn:#eab308; --err:#dc2626;
-    --ring: 0 0 0 3px rgba(255,183,3,.35);
-    --shadow: 0 10px 20px rgba(2,6,23,.08), 0 2px 6px rgba(2,6,23,.06);
-    --radius: 18px;
+    --bg:#f5f8ff; --card:#ffffff; --ink:#0f172a; --muted:#475569;
+    --accent:#2563eb; --accent-2:#0ea5e9; --ok:#16a34a; --warn:#eab308; --err:#dc2626;
+    --ring:0 0 0 3px rgba(37,99,235,.25); --shadow:0 10px 20px rgba(2,6,23,.08), 0 2px 6px rgba(2,6,23,.06);
+    --radius:16px;
   }
   html,body{height:100%}
   body{
     margin:0; font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
-    color:var(--ink);
-    /* Try the duck BG; fall back to a soft gradient if not found */
-    background:
-      url("assets/img/duck-bg-hello-style.png") center/480px no-repeat fixed,
-      linear-gradient(180deg,#d9f2ff,var(--bg));
+    color:var(--ink); background:linear-gradient(180deg,#eef4ff,var(--bg));
   }
-  .wrap{max-width:1100px; margin:32px auto; padding:0 16px; display:grid; gap:16px;}
+  .wrap{max-width:1200px; margin:24px auto; padding:0 16px; display:grid; gap:16px}
 
-  /* ===== Header / Mascot ===== */
-  header{display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-  .hgroup h1{font-size:clamp(1.2rem,1rem + 1.6vw,2rem); margin:.25rem 0}
-  .hgroup p{margin:0; color:var(--muted)}
-  .brand{
-    display:flex; align-items:center; gap:12px; padding:8px 12px; border-radius:999px;
-    background:rgba(255,255,255,.8); box-shadow:var(--shadow)
+  /* Top: calculator display + saved combos in same area */
+  .topbar{
+    display:grid; grid-template-columns: 2fr 1fr; gap:16px;
   }
-  .brand img{width:54px; height:54px; border-radius:50%; border:3px solid #111; background:#fef3c7}
+  .display{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 16px;
+    display:grid; gap:10px;
+  }
+  .calc{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    background:#0b1220; color:#d9f3ff; border-radius:12px; padding:14px 16px;
+    display:flex; justify-content:space-between; align-items:center; min-height:56px;
+  }
+  .expr{font-size:1.25rem; font-weight:700; word-break:break-word}
+  .sumBadge{font-weight:800}
+  .sumBadge.ok{color:#9ef0a0} .sumBadge.warn{color:#ffe08a} .sumBadge.err{color:#ff9b9b}
 
-  /* ===== Panels / Buttons ===== */
-  .panel{background:rgba(255,255,255,.9); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; backdrop-filter: blur(3px)}
-  .controls{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
-  .control{display:flex; gap:8px; align-items:center; background:#fff6; border:1px solid #e5e7eb; padding:8px 10px; border-radius:14px}
+  .controls{
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center
+  }
+  .control{
+    display:flex; gap:8px; align-items:center; background:#f8fafc; border:1px solid #e5e7eb;
+    padding:8px 10px; border-radius:12px
+  }
   label{font-weight:700}
-  input[type="number"]{width:84px; padding:6px 8px; border:2px solid #ffd166; border-radius:12px; font-weight:700; background:#fffaf0}
+  input[type="number"]{width:88px; padding:6px 8px; border:1px solid #cbd5e1; border-radius:10px; font-weight:700}
   input[type="number"]:focus, button:focus, .switch input:focus + .slider{outline:none; box-shadow:var(--ring)}
-
   .btn{
-    border:0; padding:10px 14px; border-radius:14px; font-weight:800; cursor:pointer;
-    background:linear-gradient(180deg,var(--accent),var(--accent-2)); color:#111; box-shadow:var(--shadow);
-    transition:transform .04s ease, filter .15s ease;
+    border:0; padding:10px 14px; border-radius:12px; font-weight:800; cursor:pointer;
+    background:var(--accent); color:#fff; box-shadow:var(--shadow); transition:transform .04s
   }
-  .btn.secondary{background:#fff; color:var(--ink); border:2px solid #ffd166}
-  .btn.ghost{background:transparent; border:2px dashed #cbd5e1; color:var(--muted)}
+  .btn.secondary{background:#0f172a0d; color:var(--ink); border:1px solid #e5e7eb}
+  .btn.ghost{background:transparent; border:1px dashed #cbd5e1; color:var(--muted)}
   .btn:disabled{opacity:.55; cursor:not-allowed}
   .btn:active{transform:translateY(1px)}
-  .btn:hover{filter:brightness(1.02)}
 
-  /* ===== Tiles ===== */
-  .grid{display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); gap:8px}
-  .tile{
-    user-select:none; text-align:center; padding:12px 0; border-radius:14px;
-    border:2px solid #111; background:#fffcee; font-weight:900; cursor:pointer;
-    box-shadow:0 2px 4px rgba(2,6,23,.05); position:relative;
-  }
-  /* tiny duck corner badge on tiles for fun */
-  .tile::after{
-    content:"🦆"; position:absolute; right:6px; top:2px; opacity:.35; font-size:14px
-  }
-  .tile[aria-disabled="true"]{opacity:.45; pointer-events:none; filter:grayscale(.2)}
-  .tile:hover{transform:translateY(-1px)}
+  /* Saved area (in topbar, right column) */
+  .savedWrap{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px 12px}
+  .savedHeader{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
+  .list{display:grid; gap:8px; max-height:280px; overflow:auto; padding-right:4px}
+  .combo{display:flex; justify-content:space-between; align-items:center; gap:8px; background:#fff; border:1px solid #e5e7eb; padding:8px 10px; border-radius:10px}
+  .small{font-size:.92rem; color:var(--muted)}
 
-  /* ===== Workspace / Saved ===== */
+  /* Middle: target frame separate from tiles/workspace */
+  .mid{
+    display:grid; grid-template-columns: 1fr 2fr; gap:16px;
+  }
+
+  .targetFrame{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px;
+    display:grid; gap:12px;
+  }
+  .targetBox{
+    border:2px solid #cbd5e1; border-radius:12px; padding:12px; background:#f8fafc; font-weight:900; font-size:1.2rem
+  }
+
+  .panel{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px
+  }
   .workspace{display:grid; grid-template-columns:1fr; gap:12px}
   .workline{
     display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;
-    background:#fff8; border:1px solid #e5e7eb; padding:10px; border-radius:14px;
+    background:#f8fafc; border:1px solid #e5e7eb; padding:10px; border-radius:12px
   }
   .chips{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
-  .chip{
-    background:#ffe8a3; color:#111; border:2px solid #111; padding:6px 10px; border-radius:999px; font-weight:900
+  .chip{background:#eef2ff; color:#111; border:1px solid #c7d2fe; padding:6px 10px; border-radius:999px; font-weight:800}
+
+  /* Tiles: 4 rows of 5 (1–20) with larger numbers */
+  .grid{display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:10px}
+  .tile{
+    user-select:none; text-align:center; padding:18px 0; border-radius:12px; border:1px solid #e5e7eb;
+    background:linear-gradient(180deg,#fff,#f6f9ff); font-weight:900; cursor:pointer; box-shadow:0 2px 4px rgba(2,6,23,.05);
+    font-size:1.75rem;
   }
+  .tile[aria-disabled="true"]{opacity:.45; pointer-events:none}
+  .tile:hover{transform:translateY(-1px)}
+
   .sum{font-weight:900}
   .sum.ok{color:var(--ok)} .sum.warn{color:var(--warn)} .sum.err{color:var(--err)}
-  .list{display:grid; gap:8px; max-height:300px; overflow:auto; padding-right:4px}
-  .combo{display:flex; justify-content:space-between; align-items:center; gap:8px; background:#fff; border:1px solid #e5e7eb; padding:10px 12px; border-radius:12px}
-  .small{font-size:.92rem; color:var(--muted)}
+
   .switch{position:relative; display:inline-block; width:46px; height:26px}
   .switch input{opacity:0; width:0; height:0}
   .slider{position:absolute; cursor:pointer; inset:0; background:#cbd5e1; border-radius:999px; transition:.2s}
   .slider:before{position:absolute; content:""; height:20px; width:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 2px rgba(2,6,23,.15)}
-  .switch input:checked + .slider{background:linear-gradient(90deg,#ffb703,#ff9f1c)}
+  .switch input:checked + .slider{background:linear-gradient(90deg, var(--accent), var(--accent-2))}
   .switch input:checked + .slider:before{transform:translateX(20px)}
-  .flex{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-  .justify{display:flex; justify-content:space-between; align-items:center; gap:12px}
-  .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; background:#f1f5f9; border:1px solid #e2e8f0; padding:2px 6px; border-radius:6px}
+
   footer{color:var(--muted); font-size:.9rem; text-align:center; padding:8px 0}
-  /* Badge on Save */
-  #saveBtn.ducky:before{
-    content:"🦆"; margin-right:6px; display:inline-block; transform:translateY(1px)
-  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="brand">
-      <!-- Uses your PNG; if not found, the onerror swaps in a tiny inline SVG duck -->
-      <img id="duckLogo" src="assets/img/duck-bg-hello-style.png" alt="Duck mascot"
-           onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,\
-<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 128 128&quot;>\
-<rect width=&quot;128&quot; height=&quot;128&quot; fill=&quot;#8fd3ff&quot;/>\
-<g stroke=&quot;#111&quot; stroke-width=&quot;6&quot; fill=&quot;#ffe8a3&quot;>\
-<circle cx=&quot;64&quot; cy=&quot;56&quot; r=&quot;36&quot;/>\
-<ellipse cx=&quot;64&quot; cy=&quot;78&quot; rx=&quot;30&quot; ry=&quot;24&quot;/></g>\
-<g fill=&quot;#111&quot;><circle cx=&quot;50&quot; cy=&quot;54&quot; r=&quot;4&quot;/><circle cx=&quot;78&quot; cy=&quot;54&quot; r=&quot;4&quot;/></g>\
-<path d=&quot;M48 66h32c0 8-8 12-16 12s-16-4-16-12z&quot; fill=&quot;#ffb703&quot; stroke=&quot;#111&quot; stroke-width=&quot;6&quot;/>\
-<path d=&quot;M88 30c12 0 18 12 6 18 14-2 14 18-2 14-10-6-10-22-4-32z&quot; fill=&quot;#ff4d58&quot; stroke=&quot;#111&quot; stroke-width=&quot;6&quot;/>\
-</svg>';"/>
-      <div class="hgroup">
-        <h1>Build the Target <span class="small">Ver 3</span></h1>
-        <p>Compose the target with <strong>≥ 3 numbers</strong>. Practice <em>additive thinking</em> (make-tens, doubles, compensation).</p>
-      </div>
-    </div>
-    <div class="controls">
-      <div class="control">
-        <label for="target">Target</label>
-        <input id="target" type="number" min="10" max="200" step="1" value="50" />
-        <button class="btn" id="newTargetBtn" title="Set new target">New Target</button>
-      </div>
-      <div class="control">
-        <label for="allowRepeats">Allow Repeats</label>
-        <label class="switch" title="Allow using the same tile more than once in a combination">
-          <input id="allowRepeats" type="checkbox">
-          <span class="slider"></span>
-        </label>
-      </div>
-      <button class="btn secondary" id="exportBtn" title="Download saved combinations as CSV">Export CSV</button>
-      <button class="btn secondary" id="exportPngBtn" title="Download saved combinations as PNG poster(s)">Export PNG</button>
-    </div>
-  </header>
 
-  <section class="panel">
-    <div class="justify" style="margin-bottom:8px">
-      <h3 style="margin:0">Tiles (1–20)</h3>
-      <div class="small">Shortcuts: <span class="kbd">1–9</span>, <span class="kbd">0</span>=10; <span class="kbd">Backspace</span>=Undo; <span class="kbd">Esc</span>=Clear.</div>
+  <!-- TOP AREA: Calculator display + Saved (same area) -->
+  <section class="topbar">
+    <div class="display">
+      <div class="calc">
+        <div id="expr" class="expr">_ + _ = _</div>
+        <div id="exprStatus" class="sumBadge warn">building…</div>
+      </div>
+      <div class="controls">
+        <div class="control">
+          <label for="target">Target</label>
+          <input id="target" type="number" min="10" max="200" step="1" value="50" />
+          <button class="btn" id="newTargetBtn" title="Set new target">Set</button>
+        </div>
+        <div class="control">
+          <label for="allowRepeats">Allow Repeats</label>
+          <label class="switch" title="Allow using the same tile more than once in a combination">
+            <input id="allowRepeats" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <button class="btn secondary" id="exportBtn">Export CSV</button>
+        <button class="btn secondary" id="exportPngBtn">Export PNG</button>
+      </div>
     </div>
-    <div id="tiles" class="grid" role="grid" aria-label="Number tiles"></div>
+
+    <div class="savedWrap">
+      <div class="savedHeader">
+        <h3 style="margin:0">Saved</h3>
+        <div class="small"><span id="countCombos">0</span> combos</div>
+      </div>
+      <div id="savedList" class="list" aria-live="polite"></div>
+    </div>
   </section>
 
-  <section class="panel workspace">
-    <div class="workline" aria-live="polite">
-      <div class="chips" id="currentChips"></div>
-      <div class="flex">
-        <div id="sumLabel" class="sum">Sum: 0</div>
-        <button class="btn secondary" id="undoBtn" title="Remove last number">Undo</button>
-        <button class="btn ghost" id="clearBtn" title="Clear current selection">Clear</button>
-        <button class="btn" id="saveBtn" disabled title="Save combination">Save</button>
+  <!-- MIDDLE: Target frame separate from tiles/workspace -->
+  <section class="mid">
+    <div class="targetFrame">
+      <h3 style="margin:0">Target</h3>
+      <div id="targetBox" class="targetBox">Current target: <strong>50</strong></div>
+      <p class="small">Goal: Make the target using <strong>two or more</strong> numbers.</p>
+    </div>
+
+    <div class="panel workspace">
+      <div class="workline" aria-live="polite">
+        <div class="chips" id="currentChips"></div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+          <div id="sumLabel" class="sum">Sum: 0</div>
+          <button class="btn secondary" id="undoBtn">Undo</button>
+          <button class="btn ghost" id="clearBtn">Clear</button>
+          <button class="btn" id="saveBtn" disabled>Save</button>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="margin-top:0">Tiles (1–20)</h3>
+        <div id="tiles" class="grid" role="grid" aria-label="Number tiles"></div>
       </div>
     </div>
-    <div class="justify">
-      <h3 style="margin:0">Saved Combinations</h3>
-      <div class="small"><span id="countCombos">0</span> saved • Unique (order doesn’t matter) • Per target</div>
-    </div>
-    <div id="savedList" class="list" aria-live="polite"></div>
-  </section>
-
-  <section class="panel">
-    <h3 style="margin-top:0">Why this builds additive thinking</h3>
-    <ul>
-      <li><strong>Part–whole &amp; decomposition:</strong> Compose the same total in multiple ways.</li>
-      <li><strong>Compensation:</strong> Adjust numbers and keep the sum constant (e.g., +1 and −1 elsewhere).</li>
-      <li><strong>Make-tens anchors:</strong> Bridge to 10, 20, 50 for mental efficiency.</li>
-    </ul>
   </section>
 
   <footer>© Build the Target • Works offline • Data saved in your browser</footer>
@@ -182,6 +177,7 @@
 <script>
 (function(){
   // ---------- State ----------
+  const MIN_NUMBERS = 2; // ✅ now "two or more"
   const state = {
     target: 50,
     current: [],
@@ -204,9 +200,12 @@
   const allowRepeatsChk = document.getElementById('allowRepeats');
   const exportBtn = document.getElementById('exportBtn');
   const exportPngBtn = document.getElementById('exportPngBtn');
+  const targetBox = document.getElementById('targetBox');
+  const exprEl = document.getElementById('expr');
+  const exprStatusEl = document.getElementById('exprStatus');
 
   // ---------- Persistence ----------
-  const LS_KEY = 'build-target-v3-duck';
+  const LS_KEY = 'build-target-v4';
   function load() {
     try {
       const raw = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
@@ -220,7 +219,7 @@
       }
     } catch {}
   }
-  function save() {
+  function saveLS() {
     const out = { target: state.target, allowRepeats: state.allowRepeats, savedByTarget: {} };
     for (const [t, set] of Object.entries(state.savedByTarget)) {
       out.savedByTarget[t] = Array.from(set);
@@ -233,10 +232,15 @@
   const keyOf = arr => [...arr].sort((a,b)=>a-b).join(',');
   const usedCountMap = arr => arr.reduce((m,v)=>(m[v]=(m[v]||0)+1,m),{});
   const getTargetSet = t => (state.savedByTarget[t] ||= new Set());
+  const formatExpr = () => {
+    if (state.current.length === 0) return `_ + _ = ${state.target}`;
+    return `${state.current.join(' + ')} = ${sum(state.current)}`;
+  };
 
   // ---------- Render ----------
   function renderTiles(){
     tilesEl.innerHTML = '';
+    // 1..20
     for (let n=1;n<=20;n++){
       const btn = document.createElement('button');
       btn.className = 'tile';
@@ -261,6 +265,7 @@
   }
 
   function renderCurrent(){
+    // chips
     currentChipsEl.innerHTML = '';
     state.current.forEach(v=>{
       const chip = document.createElement('span');
@@ -269,19 +274,24 @@
       currentChipsEl.appendChild(chip);
     });
 
+    // sum + status
     const s = sum(state.current);
     let status = 'warn';
-    if (s === state.target && state.current.length >= 3) status = 'ok';
+    if (s === state.target && state.current.length >= MIN_NUMBERS) status = 'ok';
     else if (s > state.target) status = 'err';
-
     sumLabelEl.className = `sum ${status}`;
-    const need = state.current.length < 3 ? ' • need ≥3 numbers' : '';
+    const need = state.current.length < MIN_NUMBERS ? ` • need ≥${MIN_NUMBERS} numbers` : '';
     sumLabelEl.textContent = `Sum: ${s} / Target: ${state.target}${need}`;
 
+    // calculator display
+    exprEl.textContent = formatExpr();
+    exprStatusEl.className = `sumBadge ${status}`;
+    exprStatusEl.textContent = (status==='ok'?'ready':'building…');
+
+    // save button
     const k = keyOf(state.current);
-    const canSave = (s === state.target) && (state.current.length >= 3) && !getTargetSet(state.target).has(k);
+    const canSave = (s === state.target) && (state.current.length >= MIN_NUMBERS) && !getTargetSet(state.target).has(k);
     saveBtn.disabled = !canSave;
-    saveBtn.classList.toggle('ducky', canSave);  // add little duck when it's saveable
 
     updateTileInteractivity();
   }
@@ -305,14 +315,14 @@
       row.append(left,right);
       savedListEl.appendChild(row);
     });
+
+    targetBox.innerHTML = `Current target: <strong>${state.target}</strong>`;
   }
 
   function rerenderAll(){
     targetInput.value = state.target;
     allowRepeatsChk.checked = state.allowRepeats;
-    renderTiles();
-    renderCurrent();
-    renderSaved();
+    renderTiles(); renderCurrent(); renderSaved();
   }
 
   // ---------- Handlers ----------
@@ -323,23 +333,21 @@
   }
 
   undoBtn.addEventListener('click', ()=>{
-    state.current.pop();
-    renderCurrent();
+    state.current.pop(); renderCurrent();
   });
 
   clearBtn.addEventListener('click', ()=>{
-    state.current = [];
-    renderCurrent();
+    state.current = []; renderCurrent();
   });
 
   saveBtn.addEventListener('click', ()=>{
     const s = sum(state.current);
-    if (s !== state.target || state.current.length < 3) return;
+    if (s !== state.target || state.current.length < MIN_NUMBERS) return;
     const key = keyOf(state.current);
     const set = getTargetSet(state.target);
     set.add(key);
     state.current = [];
-    save();
+    saveLS();
     renderCurrent();
     renderSaved();
   });
@@ -349,7 +357,7 @@
     if (Number.isFinite(t) && t>=10 && t<=200){
       state.target = Math.floor(t);
       state.current = [];
-      save();
+      saveLS();
       renderCurrent();
       renderSaved();
     } else {
@@ -359,11 +367,10 @@
 
   allowRepeatsChk.addEventListener('change', ()=>{
     state.allowRepeats = allowRepeatsChk.checked;
-    state.current = []; // avoid conflicts when toggling policy
-    save();
-    rerenderAll();
+    state.current = []; saveLS(); rerenderAll();
   });
 
+  // Export CSV
   exportBtn.addEventListener('click', ()=>{
     const set = getTargetSet(state.target);
     const rows = [['target','combo','count']];
@@ -377,20 +384,16 @@
     const a = document.createElement('a');
     a.href = url; a.download = `build-the-target_${state.target}.csv`;
     document.body.appendChild(a);
-    a.click();
-    URL.revokeObjectURL(url);
-    a.remove();
+    a.click(); URL.revokeObjectURL(url); a.remove();
   });
 
-  // ---- Export PNG poster(s) of saved combos ----
+  // Export PNG(s) of saved list
   exportPngBtn.addEventListener('click', exportPNG);
   function exportPNG(){
     const set = getTargetSet(state.target);
     const combos = Array.from(set).map(k => k.split(',').map(Number));
-    if (combos.length === 0){
-      alert('No saved combinations for this target yet.');
-      return;
-    }
+    if (combos.length === 0){ alert('No saved combinations for this target yet.'); return; }
+
     const title = `Build the Target — Target ${state.target}`;
     const subtitle = `${combos.length} unique combinations (order doesn’t matter)`;
     const padding = 24, colGap = 40, lineH = 28, headerH = 72, colWidth = 420, maxCanvasHeight = 1200;
@@ -424,21 +427,17 @@
       const ctx = canvas.getContext('2d');
       ctx.scale(dpr, dpr);
 
-      // Duck-y backdrop for poster
-      ctx.fillStyle = '#b7e1ff';
+      ctx.fillStyle = '#f5f8ff';
       ctx.fillRect(0,0,canvasWidth,canvasHeight);
 
-      // Title
       ctx.fillStyle = '#0f172a';
       ctx.font = '700 22px system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial';
       ctx.fillText(title, padding, padding + 26);
 
-      // Subtitle
       ctx.fillStyle = '#475569';
       ctx.font = '400 16px system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial';
       ctx.fillText(subtitle, padding, padding + 26 + 22);
 
-      // Columns
       ctx.fillStyle = '#0f172a';
       ctx.font = '600 18px system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial';
 
@@ -455,7 +454,6 @@
         }
       }
 
-      // Download
       const pageSuffix = (totalImages > 1) ? `_p${imageIndex+1}` : '';
       const a = document.createElement('a');
       a.href = canvas.toDataURL('image/png');
@@ -464,7 +462,7 @@
       a.click(); a.remove();
     }
 
-    for (let i=0; i<totalImages; i++) drawImage(i);
+    for (let i=0;i<totalImages;i++) drawImage(i);
   }
 
   // Keyboard shortcuts: digits 1-9, 0->10; Backspace undo; Esc clear
@@ -481,8 +479,7 @@
   });
 
   // ---------- Init ----------
-  load();
-  rerenderAll();
+  load(); rerenderAll();
 })();
 </script>
 </body>
